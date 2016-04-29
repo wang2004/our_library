@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+	<head>    
+		<title>欢迎登录图书管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="gb2312"/>
+		<link rel="stylesheet" href="/site_media/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/site_media/css/bootstrap-responsive.min.css" />
+		<link rel="stylesheet" href="/site_media/css/fullcalendar.css" />
+		<link rel="stylesheet" href="/site_media/css/matrix-style.css" />
+		<link rel="stylesheet" href="/site_media/css/matrix-media.css" />
+		<link href="/site_media/font-awesome/css/font-awesome.css" rel="stylesheet" />
+		<link rel="stylesheet" href="/site_media/css/jquery.gritter.css" />		
+		<link rel="stylesheet" href="/site_media/css/uniform.css" />
+		<link rel="stylesheet" href="/site_media/css/select2.css" />
+		<script src="/site_media/js/jquery.min.js"></script>
+		<script src="/site_media/js/jquery.ui.custom.js"></script>
+		<script src="/site_media/js/bootstrap.min.js"></script>
+		<script src="/site_media/js/bootstrap-datepicker.js"></script>
+		<script src="/site_media/js/masked.js"></script>
+		<script src="/site_media/js/jquery.uniform.js"></script>
+		<script src="/site_media/js/select2.min.js"></script>
+		<script src="/site_media/js/matrix.js"></script>
+		<script src="/site_media/js/matrix.form_common.js"></script>
+		<script src="/site_media/js/jquery.peity.min.js"></script>
+		<script src="/site_media/js/jquery.flot.min.js"></script>
+		<script src="/site_media/js/jquery.flot.pie.min.js"></script>
+		<script src="/site_media/js/jquery.flot.resize.min.js"></script>
+		<script src="/site_media/libaryjs/put_into_books.js"></script> 
+		<script src="/site_media/js/login_in.js"></script>
+		<script type="text/javascript">
+		
+		  var websocket;
+		  $(document).ready(init);  
+		  function init() 
+		  {		
+			  if(!("WebSocket" in window))
+			  {  
+				  $('#status').append('<p><span style="color: red;">websockets are not supported </span></p>');
+				  $("#navigation").hide();  
+			  }else 
+			  {
+				  $('#status').append('<p><span style="color: green;">websockets are supported </span></p>');
+				  connect();
+			  };
+			  $("#connected").hide(); 	
+			  $("#content").hide(); 	
+		  };
+
+		  function connect()
+		  {
+			  showScreen('<span style="color: red;">CONNECTING </span>');
+			  wsHost = $("#server").val()
+			  websocket = new WebSocket(wsHost);
+			  showScreen('<b>Connecting to: ' +  wsHost + '</b>'); 
+			  websocket.onopen = function(evt) { onOpen(evt) }; 
+			  websocket.onclose = function(evt) { onClose(evt) }; 
+			  websocket.onmessage = function(evt) { onMessage(evt) }; 
+			  websocket.onerror = function(evt) { onError(evt) }; 
+		  };  
+		  
+		  function disconnect() 
+		  {
+			  websocket.close();
+		  }; 
+
+		  function toggle_connection()
+		  {
+			  if(websocket.readyState == websocket.OPEN)
+			  {
+				  disconnect();
+			  } 
+			  else 
+			  {
+				  connect();
+			  };
+		  };
+
+		  function sendTxt(txt) 
+		  {
+			  if(websocket.readyState == websocket.OPEN)
+			  {
+				  websocket.send(txt);
+			  } 
+			  else 
+			  {
+				   showScreen('websocket is not connected'); 
+			  };
+		  };
+
+		  function onOpen(evt) 
+		  { 
+			  showScreen('<span style="color: green;">CONNECTED </span>'); 
+			  $("#connected").fadeIn('slow');
+			  $("#content").fadeIn('slow');
+		  };  
+
+		  function onClose(evt) 
+		  { 
+			  showScreen('<span style="color: red;">DISCONNECTED </span>');
+		  };  
+
+		  function onMessage(evt) 
+		  { 
+			  showScreen('<span style="color: blue;">RESPONSE: ' + evt.data+ '</span>'); 
+		  };  
+
+		  function onError(evt) 
+		  {
+			  showScreen('<span style="color: red;">ERROR: ' + evt.data+ '</span>');
+		  };
+
+		  function showScreen(txt) 
+		  { 
+			  $('#output').prepend('<p>' + txt + '</p>');
+		  };
+
+		  function clearScreen() 
+		  { 
+			  $('#output').html("");
+		  };
+
+		function detail_login()
+		{	
+			var usrname =   document.getElementById('username').value;
+			var usrpasswd = document.getElementById('passwd').value;
+			//alert(usrpasswd);
+			sendTxt(usrname);
+		};	
+		</script>
+	</head>    
+    <body>
+	    <center>
+	    	<h1>欢迎登录</h1>
+			<div class="">
+			  <div class="login-screen">
+			    <form name='form_login'  method='post'onSubmit="detail_login()">
+				    <div class="login-form">
+				      <div class="control-group">
+				        <label class="login-field-icon fui-user login-icon-little" for="login-name">用户名称:</label>				      
+				        <input type="text" class="login-field login-icon-much" id='username' name='user' value="" placeholder="输入您的中文名字" id="login-name" />
+				      </div>
+				      <div class="control-group">
+				        <label class="login-field-icon fui-lock login-icon-little" for="login-pass">登录密码:</label>				      
+				        <input type="password" class="login-field login-icon-much" id='passwd' name='pass' value="" placeholder="输入您的密码" id="login-pass" />
+				      </div>
+				    </div>
+					<input type="submit" name="submit"> 
+	            </form>
+			  </div>
+			</div>
+    <div id="header">
+      <h1>Websocket client</h1>
+      <div id="status"></div>
+    </div>
+
+
+    <div id="navigation">
+
+      <p id="connecting">
+	<input type='text' id="server" value="ws://localhost:8000/websocket"></input>
+	<button type="button" onclick="toggle_connection()">connection</button>
+      </p>
+      <div id="connected">				
+	<p>
+	  <input type='text' id="send_txt" value=></input>
+	  <button type="button" onclick="sendTxt();">send</button>
+	</p>
+      </div>
+
+      <div id="content">						
+	<button id="clear" onclick="clearScreen()" >Clear text</button>
+	<div id="output"></div>
+      </div>
+
+    </div>			
+		</center>
+	<p style="text-align:left"><label>使用说明:</label></p>
+	<p style="text-align:left"><label>1. 请联系站点管理员开通访问权限</label></p>
+	<p style="text-align:left"><label>2. 本网站为波分武汉开发部专用</label></p>
+	<p style="text-align:left"><label>3. 有问题请联系汪胜钢支持</label></p>	
+	<p style="text-align:left"><label>4. 未成年人不得入内</label></p>
+	<p style="text-align:left"><label>5. 谢谢！</label></p>		
+
+    </body>
+
+</html>
