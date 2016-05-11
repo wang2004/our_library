@@ -39,21 +39,30 @@ wait(Socket, F, State0) ->
             wait(Socket, F, State0)
     end.
 
-binary_data_have_
 
-is_binary_contain_key(H|L1,Key)->
-    Head = binary:split(BinText,<<58>>),
-    is_binary_contain_key(Head),
-    <<Key,N/binary>> = H,
-	case (N =:= key) of
-        true->H;
-        false->is_list_contain_key(L1)
-    end.        
+%%%
+%%%is_binary_contain_key([H|L1],Key)->
+%%%    Head = binary:split(L1,<<58>>),
+%%%    is_binary_contain_key(Head),
+%%%    <<Key,N/binary>> = H,
+%%%	case (N =:= key) of
+%%%        true->H;
+ %%%       false->is_list_contain_key(L1)
+%%%    end.        
+
+%%%recevice_data_handle(BinText)->
+%%%	L = binary:split(BinText,<<44>>),
+%%%	is_binary_contain_key(L,key).
 
 recevice_data_handle(BinText)->
-	L = binary:split(BinText,<<44>>),
-	is_binary_contain_key(L,key).
-	
+    L = binary:split(BinText,<<44>>),
+    [Head | L1] = L,
+    data_detail_handle(Head,L1).
+
+data_detail_handle(MsgHead,MsgBody)->
+    ok.
+
+
 loop(Socket, Pid) ->
     receive
         {tcp, Socket, Data} ->
