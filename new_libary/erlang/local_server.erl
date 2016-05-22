@@ -59,8 +59,31 @@ recevice_data_handle(BinText)->
     [Head | L1] = L,
     data_detail_handle(Head,L1).
 
+other_info_handle(MsgBody)->
+    MsgBody.
+
 data_detail_handle(MsgHead,MsgBody)->
-    ok.
+    case MsgHead of 
+        <<"username_passwd">> ->
+            login_info_handle(MsgBody);
+         <<"admin">>->
+            other_info_handle(MsgBody)
+     end.          
+check_login_info_right(_,[])->
+    "false";
+
+check_login_info_right(LogInfo,[Head|LogList])->
+    case LogInfo =:= Head of
+        true->
+            "true";
+        false->
+             check_login_info_right(LogInfo,LogList)
+        end.        
+
+login_info_handle(Msg)->
+    [UserName,Passwd]= Msg,
+    SetLogInfo = [{"wang","123"},{"zhang","234"}],
+    check_login_info_right({UserName,Passwd},SetLogInfo).
 
 
 loop(Socket, Pid) ->
@@ -69,8 +92,9 @@ loop(Socket, Pid) ->
             Text = websocket_data(Data),
             case Text =/= <<>> of
                 true ->
-					recevice_data_handle(Text),
-                    Pid ! {browser, self(), ["What You said is: ",  Text]};
+                    io:format("recv data from browser:~p",[Text]),
+					Reply = recevice_data_handle(Text),
+                    Pid ! {browser, self(), [Reply]};
                 false ->
                     ok
             end,

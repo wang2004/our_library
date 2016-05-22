@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+    <head>
+
+        <meta charset="utf-8">
+        <title>Fullscreen Login</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <!-- CSS -->
+        <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=PT+Sans:400,700'>
+        <link rel="stylesheet" href="assets/css/reset.css">
+        <link rel="stylesheet" href="assets/css/supersized.css">
+        <link rel="stylesheet" href="assets/css/style.css">
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+	<script type="text/javascript">
+		  var websocket;
+		  $(document).ready(init);  
+		  function init() 
+		  {		
+			  if(!("WebSocket" in window))
+			  {  
+				  $('#status').append('<p><span style="color: red;">websockets are not supported </span></p>');
+				  $("#navigation").hide();  
+			  }else 
+			  {
+				  $('#status').append('<p><span style="color: green;">websockets are supported </span></p>');
+				  connect();
+			  };
+			  $("#connected").hide(); 	
+			  $("#content").hide(); 	
+		  };
+
+		  function connect()
+		  {
+			  showScreen('<span style="color: red;">CONNECTING </span>');
+			  wsHost = $("#server").val()
+			  websocket = new WebSocket(wsHost);
+			  showScreen('<b>Connecting to: ' +  wsHost + '</b>'); 
+			  websocket.onopen = function(evt) { onOpen(evt) }; 
+			  websocket.onclose = function(evt) { onClose(evt) }; 
+			  websocket.onmessage = function(evt) { onMessage(evt) }; 
+			  websocket.onerror = function(evt) { onError(evt) }; 
+		  };  
+		  
+		  function disconnect() 
+		  {
+			  websocket.close();
+		  }; 
+
+		  function toggle_connection()
+		  {
+			  if(websocket.readyState == websocket.OPEN)
+			  {
+				  disconnect();
+			  } 
+			  else 
+			  {
+				  connect();
+			  };
+		  };
+
+		  function sendTxt(txt) 
+		  {
+			  if(websocket.readyState == websocket.OPEN)
+			  {
+				  websocket.send(txt);
+			  } 
+			  else 
+			  {
+				   showScreen('websocket is not connected'); 
+			  };
+		  };
+		  function sendMsg() 
+			  {
+			  if(websocket.readyState == websocket.OPEN){
+				  txt = $("#send_txt").val();
+				  websocket.send(txt);
+				  showScreen('sending: ' + txt); 
+			  } else 
+			  {
+				   showScreen('websocket is not connected'); 
+			  };
+      };
+
+		  function onOpen(evt) 
+		  { 
+			  showScreen('<span style="color: green;">CONNECTED </span>'); 
+			  $("#connected").fadeIn('slow');
+			  $("#content").fadeIn('slow');
+		  };  
+
+		  function onClose(evt) 
+		  { 
+			  showScreen('<span style="color: red;">DISCONNECTED </span>');
+		  };  
+
+		  function onMessage(evt) 
+		  { 
+			  showScreen('<span style="color: blue;">RESPONSE: ' + evt.data+ '</span>'); 
+			  alert(evt.data);
+		  };  
+
+		  function onError(evt) 
+		  {
+			  showScreen('<span style="color: red;">ERROR: ' + evt.data+ '</span>');
+		  };
+
+		  function showScreen(txt) 
+		  { 
+			  $('#output').prepend('<p>' + txt + '</p>');
+		  };
+
+		  function clearScreen() 
+		  { 
+			  $('#output').html("");
+		  };
+
+		function detail_login()
+		{	
+			var usrname = document.getElementById("login-name").value;
+			//var usrname = $("#login-name").val;
+			var usrpasswd = document.getElementById("login-pass").value;
+			var send_data = "username_passwd,";
+			send_data += usrname;
+			send_data +=  ",";
+			send_data += usrpasswd;
+			alert(send_data);
+			sendTxt(send_data);
+		};	
+	</script>
+    </head>
+
+    <body>
+
+        <div class="page-container">
+            <h1>Login</h1>
+            <form action="" method="post">
+                <input type="text" name="username" class="username" placeholder="Username" id="login-name">
+                <input type="password" name="password" class="password" placeholder="Password" id="login-pass">
+                <button type="submit" onclick="detail_login()">Sign me in</button>
+                <div class="error"><span>+</span></div>
+            </form>
+            <div class="connect">
+                <p>Or connect with:</p>
+                <p>
+                    <a class="facebook" href=""></a>
+                    <a class="twitter" href=""></a>
+                </p>
+            </div>
+        </div>
+        <!-- Javascript -->
+        <script src="assets/js/jquery-1.8.2.min.js"></script>
+        <script src="assets/js/supersized.3.2.7.min.js"></script>
+        <script src="assets/js/supersized-init.js"></script>
+        <script src="assets/js/scripts.js"></script>
+
+    </body>
+
+</html>
+
