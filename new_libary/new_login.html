@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html>
 
     <head>
 
@@ -20,11 +20,18 @@
         <!--[if lt IE 9]>
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
+	<script src="assets/js/jquery-1.8.2.min.js"></script>
+	<script src="assets/js/supersized.3.2.7.min.js"></script>
+	<script src="assets/js/supersized-init.js"></script>
+	<script src="assets/js/scripts.js"></script>		
 	<script type="text/javascript">
 		  var websocket;
+		  
 		  $(document).ready(init);  
 		  function init() 
 		  {		
+			  
+			 
 			  if(!("WebSocket" in window))
 			  {  
 				  $('#status').append('<p><span style="color: red;">websockets are not supported </span></p>');
@@ -36,12 +43,15 @@
 			  };
 			  $("#connected").hide(); 	
 			  $("#content").hide(); 	
+		    
 		  };
-
+		
+		
 		  function connect()
 		  {
 			  showScreen('<span style="color: red;">CONNECTING </span>');
-			  wsHost = $("#server").val()
+			  //wsHost = $("#server").val()
+			  var wsHost = "ws://localhost:8000/websocket";
 			  websocket = new WebSocket(wsHost);
 			  showScreen('<b>Connecting to: ' +  wsHost + '</b>'); 
 			  websocket.onopen = function(evt) { onOpen(evt) }; 
@@ -157,10 +167,7 @@
             </div>
         </div>
         <!-- Javascript -->
-        <script src="assets/js/jquery-1.8.2.min.js"></script>
-        <script src="assets/js/supersized.3.2.7.min.js"></script>
-        <script src="assets/js/supersized-init.js"></script>
-        <script src="assets/js/scripts.js"></script>
+ 
 
     </body>
 
