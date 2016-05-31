@@ -69,12 +69,12 @@ data_detail_handle(MsgHead,MsgBody)->
             other_info_handle(MsgBody)
      end.          
 check_login_info_right(_,[])->
-    "false";
+    "login_result:false";
 
 check_login_info_right(LogInfo,[Head|LogList])->
     case LogInfo =:= Head of
         true->
-            "true";
+            "login_result:true";
         false->
              check_login_info_right(LogInfo,LogList)
         end.        

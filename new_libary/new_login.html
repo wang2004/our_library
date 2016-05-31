@@ -111,11 +111,28 @@
 		  { 
 			  showScreen('<span style="color: red;">DISCONNECTED </span>');
 		  };  
-
+		  
+		  function handle_recv_login(login_result_data)
+		  {
+		      if("true" == login_result_data)
+			  {
+			  
+			  }
+			  else if("false" == login_result_dat)
+			  {
+				 alert("用户名或密码错误");
+			  }
+		  };
+		  
 		  function onMessage(evt) 
 		  { 
 			  showScreen('<span style="color: blue;">RESPONSE: ' + evt.data+ '</span>'); 
 			  alert(evt.data);
+			  //var revc_data = evt.data.split(":");
+			  //if(recv_data[0] == "login_result")
+			  //{
+			  //     handle_recv_login(recv_data[1]);
+			  //}
 		  };  
 
 		  function onError(evt) 
@@ -132,18 +149,34 @@
 		  { 
 			  $('#output').html("");
 		  };
-
-		function detail_login()
-		{	
-			var usrname = document.getElementById("login-name").value;
-			//var usrname = $("#login-name").val;
-			var usrpasswd = document.getElementById("login-pass").value;
+		  
+		function send_msg_to_erlang(usrname,usrpasswd)
+		{
 			var send_data = "username_passwd,";
 			send_data += usrname;
 			send_data +=  ",";
 			send_data += usrpasswd;
-			alert(send_data);
-			sendTxt(send_data);
+			sendTxt(send_data);		
+		
+		};
+
+
+
+		function detail_login()
+		{	
+			var usrname = document.getElementById("login-name").value;
+			var usrpasswd = document.getElementById("login-pass").value;
+			if(usrname == "" || usrname == null)
+			{
+				alert("用户名不能为空");
+				return false;
+			}
+			else if(usrpasswd == "" || usrpasswd == null)
+			{
+				alert("密码不能为空");
+				return false;
+			}
+			send_msg_to_erlang(usrname,usrpasswd);
 		};	
 	</script>
     </head>
