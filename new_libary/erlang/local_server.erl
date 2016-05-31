@@ -31,7 +31,6 @@ wait(Socket, F, State0) ->
              "sec-websocket-accept: ", Challenge, "\r\n",
              "\r\n",<<>>],
             gen_tcp:send(Socket, Handshake),
-            send_data(Socket, "Hello, my world"),
             S = self(),
             Pid = spawn_link(fun() -> F(S, State0) end),
             loop(Socket, Pid);
@@ -81,7 +80,7 @@ check_login_info_right(LogInfo,[Head|LogList])->
         end.        
 
 login_info_handle(Msg)->
-    [UserName,Passwd]= Msg,
+    [<<UserName,Passwd/binary>>]= Msg,
     SetLogInfo = [{"wang","123"},{"zhang","234"}],
     check_login_info_right({UserName,Passwd},SetLogInfo).
 
